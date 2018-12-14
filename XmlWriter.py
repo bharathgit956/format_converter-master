@@ -2,9 +2,12 @@ import xml.etree.ElementTree as ET
 import os
 
 
+
+
 class XmlWriter:
 
-    def __init__(self, file_path):
+    def __init__(self, file_path, final_path):
+        self.final_path = final_path
         self.file_path = file_path
         tree = ET.parse(self.file_path)
         self.root = tree.getroot()
@@ -14,15 +17,26 @@ class XmlWriter:
         self.header_root.set('id', 'unset')
         self.parscit_root = ET.Element("document")
         self.parscit_root.set('id', 'unset')
+        self.intent = ""
+        self.version=""
 
 
 
     def titleAndAuthorExtraction(self, childs):
-        algorithm = ET.SubElement(self.newRoot, "algorithm", name="SVM HeaderParse", version="0.2")
+        file_info = self.newRoot.find("fileInfo")
+        conversionTrace = file_info.find('conversionTrace')
+        if conversionTrace != "":
+            algorithm = ET.SubElement(self.newRoot, "algorithm", name=conversionTrace.text, version=self.version)
+        else:
+            algorithm = ET.SubElement(self.newRoot, "algorithm", name='"SVM HeaderParse', version='0.2')
+
         title = ET.SubElement(algorithm, "title")
         authors = ET.SubElement(algorithm, "authors")
 
-        algorithm_header = ET.SubElement(self.header_root, "algorithm", name="SVM HeaderParse", version="0.2")
+        if conversionTrace != "":
+            algorithm_header = ET.SubElement(self.header_root, "algorithm", name=conversionTrace.text, version=self.version)
+        else:
+            algorithm_header = ET.SubElement(self.header_root, "algorithm", name="SVM HeaderParse", version="0.2")
         title_header = ET.SubElement(algorithm_header, "title")
         authors_header = ET.SubElement(algorithm_header, "authors")
 
@@ -106,7 +120,10 @@ class XmlWriter:
 
     def parseHeaderInformation(self, tag):
         for childs in tag:
-            if childs.tag == '{http://www.tei-c.org/ns/1.0}fileDesc':
+            if childs.tag == '{http://www.tei-c.org/ns/1.0}encodingDesc':
+                self.conversationTraceExtractor(childs)
+
+            elif childs.tag == '{http://www.tei-c.org/ns/1.0}fileDesc':
                 self.titleAndAuthorExtraction(childs)
 
             elif childs.tag == '{http://www.tei-c.org/ns/1.0}profileDesc':
@@ -216,7 +233,11 @@ class XmlWriter:
         pass
 
     def extractReferences(self, child):
-        algorithm = ET.SubElement(self.newRoot, "algorithm", name="ParsCit", version="1.0")
+        if self.ident != "" and self.version != "":
+            algorithm = ET.SubElement(self.newRoot, "algorithm", name=self.ident, version=self.version)
+        else:
+            algorithm = ET.SubElement(self.newRoot, "algorithm", name="ParsCit", version="1.0")
+
         citationList = ET.SubElement(algorithm, "citationList")
         algorithm_parscit = ET.SubElement(self.parscit_root, "algorithm", name="ParsCit", version="1.0")
         citationList_parscit = ET.SubElement(algorithm_parscit, "citationList")
@@ -239,7 +260,34 @@ class XmlWriter:
                     elif child.attrib['type'] == 'references':
                         self.extractReferences(child)
 
+    def createFileInfo(self):
+        file_info = ET.SubElement(self.newRoot, "fileInfo")
+        filename, extension = os.path.splitext(self.file_path)
+        filename, extension = os.path.splitext(filename)
+        filename, extension = os.path.split(filename)
+
+        final_path = self.final_path + '/' + extension
+
+        file_1 = final_path + '/' + extension + '.pdf'
+        file_2 = final_path + '/' + extension + '.body'
+        file_3 = final_path + '/' + extension + '.cite'
+
+        ET.SubElement(file_info, "repository").text = "rep1"
+        ET.SubElement(file_info, "filePath").text = file_1
+        ET.SubElement(file_info, "bodyFile").text = file_2
+        ET.SubElement(file_info, "citeFile").text = file_3
+        ET.SubElement(file_info, "conversionTrace").text = ""
+
+        check_sums = ET.SubElement(file_info, "checkSums")
+        check_sum = ET.SubElement(check_sums, "checkSum")
+        ET.SubElement(check_sum, "fileType").text = "pdf"
+        ET.SubElement(check_sum, "sha1").text = "e265c1a48b76afc5aa9498a3d44168f7a1cc9922"
+
+
+
+
     def main(self):
+        self.createFileInfo()
         for childs in self.root:
             if childs.tag == '{http://www.tei-c.org/ns/1.0}teiHeader':
                 self.parseHeaderInformation(childs)
@@ -273,4 +321,16 @@ class XmlWriter:
                 elem.tail = j
         return elem
 
+    def conversationTraceExtractor(self, childs):
+        for child in childs:
+            for ch in child:
+                if ch.tag == '{http://www.tei-c.org/ns/1.0}application':
+                    try:
+                        file_info = self.newRoot.find("fileInfo")
+                        conversionTrace = file_info.find('conversionTrace')
+                        conversionTrace.text = ""+ch.attrib['ident'] + " "+ch.attrib['version']
+                        self.ident = ch.attrib['ident']
+                        self.version = ch.attrib['version']
+                    except:
+                        pass
 

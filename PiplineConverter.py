@@ -31,7 +31,7 @@ class PipelineConverter:
     fh1 = open(file_2,'w')
     fh2 = open(file_3,'w')
 
-    xmlWriter = XmlWriter(path2)
+    xmlWriter = XmlWriter(path2,path3)
     xmlWriter.main()
 
     ET.ElementTree(xmlWriter.get_xml_root()).write(file_3)
