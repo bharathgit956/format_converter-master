@@ -1,14 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="9a64bd01-64d2-43ca-bec3-5c397a3fe0b5" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/formatConverter.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/formatConverter.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PiplineConverter.py" beforeDir="false" afterPath="$PROJECT_DIR$/PiplineConverter.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/XmlWriter.py" beforeDir="false" afterPath="$PROJECT_DIR$/XmlWriter.py" afterDir="false" />
-    </list>
+    <list default="true" id="9a64bd01-64d2-43ca-bec3-5c397a3fe0b5" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -16,7 +9,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/format_converter_master$piplineConverter.coverage" NAME="piplineConverter Coverage Results" MODIFIED="1544748905959" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/format_converter_master$piplineConverter.coverage" NAME="piplineConverter Coverage Results" MODIFIED="1544749164028" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="FUSProjectUsageTrigger">
     <session id="-956770198">
@@ -64,12 +57,12 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="py" value="689" />
+          <entry key="py" value="716" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Python" value="689" />
+          <entry key="Python" value="716" />
         </counts>
       </usages-collector>
     </session>
@@ -79,7 +72,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/PiplineConverter.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="210">
+            <state relative-caret-position="495">
               <caret line="33" column="37" selection-start-line="33" selection-start-column="37" selection-end-line="33" selection-end-column="37" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
@@ -103,11 +96,11 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/XmlWriter.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3170">
-              <caret line="232" column="12" selection-start-line="232" selection-start-column="12" selection-end-line="232" selection-end-column="12" />
+            <state relative-caret-position="155">
+              <caret line="279" lean-forward="true" selection-start-line="279" selection-end-line="279" />
               <folding>
                 <element signature="e#0#34#0" expanded="true" />
-                <marker date="1544748723945" expanded="true" signature="11565:12635" ph="..." />
+                <marker date="1544748958480" expanded="true" signature="11888:12923" ph="..." />
               </folding>
             </state>
           </provider>
@@ -306,7 +299,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
-    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.2532189" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -321,7 +313,7 @@
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Version Control" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Terminal" order="8" weight="0.32920793" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="8" visible="true" weight="0.32920793" />
       <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
       <window_info anchor="bottom" id="Python Console" order="10" />
       <window_info anchor="right" id="Database" />
@@ -361,16 +353,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/FormatConversion.py" />
-    <entry file="file://$PROJECT_DIR$/PiplineConverter.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="33" column="37" selection-start-line="33" selection-start-column="37" selection-end-line="33" selection-end-column="37" />
-          <folding>
-            <element signature="e#0#9#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/TextExtractor.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="268">
@@ -381,13 +363,23 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/PiplineConverter.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="495">
+          <caret line="33" column="37" selection-start-line="33" selection-start-column="37" selection-end-line="33" selection-end-column="37" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/XmlWriter.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3170">
-          <caret line="232" column="12" selection-start-line="232" selection-start-column="12" selection-end-line="232" selection-end-column="12" />
+        <state relative-caret-position="155">
+          <caret line="279" lean-forward="true" selection-start-line="279" selection-end-line="279" />
           <folding>
             <element signature="e#0#34#0" expanded="true" />
-            <marker date="1544748723945" expanded="true" signature="11565:12635" ph="..." />
+            <marker date="1544748958480" expanded="true" signature="11888:12923" ph="..." />
           </folding>
         </state>
       </provider>

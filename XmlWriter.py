@@ -239,7 +239,10 @@ class XmlWriter:
             algorithm = ET.SubElement(self.newRoot, "algorithm", name="ParsCit", version="1.0")
 
         citationList = ET.SubElement(algorithm, "citationList")
-        algorithm_parscit = ET.SubElement(self.parscit_root, "algorithm", name="ParsCit", version="1.0")
+        if self.ident != "" and self.version != "":
+            algorithm_parscit = ET.SubElement(self.parscit_root, "algorithm", name=self.ident, version=self.version)
+        else:
+            algorithm_parscit = ET.SubElement(self.parscit_root, "algorithm", name="ParsCit", version="1.0")
         citationList_parscit = ET.SubElement(algorithm_parscit, "citationList")
         for ch in child:
             #print("REFERENCES")
@@ -281,7 +284,7 @@ class XmlWriter:
         check_sums = ET.SubElement(file_info, "checkSums")
         check_sum = ET.SubElement(check_sums, "checkSum")
         ET.SubElement(check_sum, "fileType").text = "pdf"
-        ET.SubElement(check_sum, "sha1").text = "e265c1a48b76afc5aa9498a3d44168f7a1cc9922"
+        ET.SubElement(check_sum, "sha1").text = ""
 
 
 
