@@ -6,17 +6,20 @@ import os
 
 class XmlWriter:
 
-    def __init__(self, file_path, final_path):
+    def __init__(self, file_path, final_path,path_parscit,path_met):
         self.final_path = final_path
         self.file_path = file_path
+        self.path_parscit = path_parscit
+        self.path_met = path_met
+        print(file_path)
         tree = ET.parse(self.file_path)
+        self.parscit_input = ET.parse(self.path_parscit)
         self.root = tree.getroot()
         self.newRoot = ET.Element("document")
         self.newRoot.set('id', 'unset')
-        self.header_root = ET.Element("document")
-        self.header_root.set('id', 'unset')
-        self.parscit_root = ET.Element("document")
-        self.parscit_root.set('id', 'unset')
+        self.header_root = None
+        #self.header_root.set('id', 'unset')
+        self.parscit_root = self.parscit_input.getroot()[0]
         self.intent = ""
         self.version=""
 
@@ -34,14 +37,16 @@ class XmlWriter:
         authors = ET.SubElement(algorithm, "authors")
 
         if conversionTrace != "":
-            algorithm_header = ET.SubElement(self.header_root, "algorithm", name=conversionTrace.text, version=self.version)
+            self.header_root = ET.Element("algorithm", name=conversionTrace.text, version=self.version)
         else:
-            algorithm_header = ET.SubElement(self.header_root, "algorithm", name="SVM HeaderParse", version="0.2")
-        title_header = ET.SubElement(algorithm_header, "title")
-        authors_header = ET.SubElement(algorithm_header, "authors")
+            self.header_root = ET.Element("algorithm", name="SVM HeaderParse", version="0.2")
+
+
+        title_header = ET.SubElement(self.header_root, "title")
+        authors_header = ET.SubElement(self.header_root, "authors")
 
         for child in childs:
-            if child.tag == '{http://www.tei-c.org/ns/1.0}titleStmt':
+            if child.tag == 'titleStmt':
                 try:
                     #print(child[0].text)
                     title.text = child[0].text
@@ -49,10 +54,10 @@ class XmlWriter:
                 except:
                     pass
 
-            elif child.tag == '{http://www.tei-c.org/ns/1.0}sourceDesc':
+            elif child.tag == 'sourceDesc':
                 try:
                     for ch in child[0][0]:
-                        if ch.tag == '{http://www.tei-c.org/ns/1.0}author':
+                        if ch.tag == 'author':
                             self.authorExtraction(ch, authors,authors_header)
                 except:
                     pass
@@ -61,7 +66,7 @@ class XmlWriter:
         authorXml = ET.SubElement(authors, "author")
         authorXml_header = ET.SubElement(authors_header, "author")
         for author in childs:
-            if author.tag == '{http://www.tei-c.org/ns/1.0}persName':
+            if author.tag == 'persName':
                 s = ""
                 for ch in author:
                     try:
@@ -72,7 +77,7 @@ class XmlWriter:
                 name_header = ET.SubElement(authorXml_header, "name")
                 name.text = s
                 name_header.text = s
-            elif author.tag == '{http://www.tei-c.org/ns/1.0}email':
+            elif author.tag == 'email':
                 try:
                     email = ET.SubElement(authorXml, "email")
                     email.text = author.text
@@ -80,10 +85,10 @@ class XmlWriter:
                     email_header.text = author.text
                 except:
                     pass
-            elif author.tag == '{http://www.tei-c.org/ns/1.0}affiliation':
+            elif author.tag == 'affiliation':
                 s1 = ""
                 for ch in author:
-                    if ch.tag == '{http://www.tei-c.org/ns/1.0}address':
+                    if ch.tag == 'address':
                         s = ""
                         for c in ch:
                             try:
@@ -107,59 +112,65 @@ class XmlWriter:
     def abstractExtraction(self, childs):
         algorithm = self.newRoot.find("algorithm")
         abstract = ET.SubElement(algorithm, "abstract")
-        algorithm_header = self.header_root.find("algorithm")
-        abstract_header = ET.SubElement(algorithm_header, "abstract")
+        #algorithm_header = self.header_root.find("algorithm")
+        abstract_header = ET.SubElement(self.header_root, "abstract")
         for child in childs:
-            if child.tag == '{http://www.tei-c.org/ns/1.0}abstract':
-                try:
-                    #print(child[0].text)
-                    abstract.text = child[0].text
-                    abstract_header.text = child[0].text
-                except:
-                    pass
+            if child.tag == 'abstract':
+                temp_str = ""
+                if child.text and child.text != "\n":
+                    temp_str = temp_str + child.text
+                else:
+                    for ch in child:
+                        try:
+                            for c in ch:
+                                temp_str = temp_str+ " " + c.text
+                        except:
+                            pass
+                abstract.text = temp_str
+                abstract_header.text = temp_str
 
     def parseHeaderInformation(self, tag):
         for childs in tag:
-            if childs.tag == '{http://www.tei-c.org/ns/1.0}encodingDesc':
+            if childs.tag == 'encodingDesc':
                 self.conversationTraceExtractor(childs)
 
-            elif childs.tag == '{http://www.tei-c.org/ns/1.0}fileDesc':
+            elif childs.tag == 'fileDesc':
                 self.titleAndAuthorExtraction(childs)
 
-            elif childs.tag == '{http://www.tei-c.org/ns/1.0}profileDesc':
+            elif childs.tag == 'profileDesc':
                 self.abstractExtraction(childs)
 
     def extractRawString(self, c):
         s = ""
         for childs in c:
-            if childs.tag == '{http://www.tei-c.org/ns/1.0}analytic':
+            if childs.tag == 'analytic':
                 for child in childs:
-                    if child.tag == '{http://www.tei-c.org/ns/1.0}title':
+                    if child.tag == 'title':
                         try:
                             s = s + child.text + " ,"
                         except:
                             pass
-                    if child.tag == '{http://www.tei-c.org/ns/1.0}author':
+                    if child.tag == 'author':
                         for ch in child:
                             for c in ch:
                                 s = s + c.text + " "
                             s = s + ","
-            if childs.tag == '{http://www.tei-c.org/ns/1.0}monogr':
+            if childs.tag == 'monogr':
                 for ch in childs:
-                    if ch.tag == '{http://www.tei-c.org/ns/1.0}title' or ch.tag == '{http://www.tei-c.org/ns/1.0}editor':
+                    if ch.tag == 'title' or ch.tag == 'editor':
                         try:
                             s = s + ch.text + " ,"
                         except:
                             pass
-                    if ch.tag == '{http://www.tei-c.org/ns/1.0}meeting':
+                    if ch.tag == 'meeting':
                         pass
-                    if ch.tag == '{http://www.tei-c.org/ns/1.0}imprint':
+                    if ch.tag == 'imprint':
                         for c in ch:
-                            if c.tag == '{http://www.tei-c.org/ns/1.0}publisher':
+                            if c.tag == 'publisher':
                                 s = s + c.text + " ,"
                             if 'when' in c.attrib.keys():
                                 s = s + c.attrib['when'] + " "
-            if childs.tag == '{http://www.tei-c.org/ns/1.0}note':
+            if childs.tag == 'note':
                 s = s + childs.text
         return s
 
@@ -169,62 +180,62 @@ class XmlWriter:
         citation = ET.SubElement(citationList, "citation", valid="true")
         title = ET.SubElement(citation, "title")
         authors = ET.SubElement(citation, "authors")
-        citation_parscit = ET.SubElement(citationList_parscit, "citation", valid="true")
-        title_parscit = ET.SubElement(citation_parscit, "title")
-        authors_parscit = ET.SubElement(citation_parscit, "authors")
+        #citation_parscit = ET.SubElement(citationList_parscit, "citation", valid="true")
+        #title_parscit = ET.SubElement(citation_parscit, "title")
+        #authors_parscit = ET.SubElement(citation_parscit, "authors")
         for childs in c:
-            if childs.tag == '{http://www.tei-c.org/ns/1.0}analytic':
+            if childs.tag == 'analytic':
                 for child in childs:
-                    if child.tag == '{http://www.tei-c.org/ns/1.0}title':
+                    if child.tag == 'title':
                         try:
                             title.text = child.text
-                            title_parscit.text = child.text
+                            #title_parscit.text = child.text
                         except:
                             pass
-                    if child.tag == '{http://www.tei-c.org/ns/1.0}author':
+                    if child.tag == 'author':
                         for ch in child:
                             name = ""
                             for c in ch:
                                 name = name + c.text + " "
                             ET.SubElement(authors, "author").text = name
-                            ET.SubElement(authors_parscit, "author").text = name
-            if childs.tag == '{http://www.tei-c.org/ns/1.0}monogr':
+                            #ET.SubElement(authors_parscit, "author").text = name
+            if childs.tag == 'monogr':
                 for ch in childs:
-                    if ch.tag == '{http://www.tei-c.org/ns/1.0}title':
+                    if ch.tag == 'title':
                         try:
                             if ch.attrib['level'] == "j":
                                 ET.SubElement(citation, "journal").text = ch.text
-                                ET.SubElement(citation_parscit, "journal").text = ch.text
+                                #ET.SubElement(citation_parscit, "journal").text = ch.text
 
                         except:
                             pass
-                    if ch.tag == '{http://www.tei-c.org/ns/1.0}editor':
+                    if ch.tag == 'editor':
                         try:
                             s = s + ch.text + " ,"
                         except:
                             pass
-                    if ch.tag == '{http://www.tei-c.org/ns/1.0}meeting':
+                    if ch.tag == 'meeting':
                         pass
-                    if ch.tag == '{http://www.tei-c.org/ns/1.0}imprint':
+                    if ch.tag == 'imprint':
                         for c in ch:
-                            if c.tag == '{http://www.tei-c.org/ns/1.0}publisher':
+                            if c.tag == 'publisher':
                                 s = s + c.text + " ,"
                             if 'when' in c.attrib.keys():
                                 ET.SubElement(citation, "date").text = c.attrib['when']
-                                ET.SubElement(citation_parscit, "date").text = c.attrib['when']
+                                #ET.SubElement(citation_parscit, "date").text = c.attrib['when']
                             if 'volume' in c.attrib.keys():
                                 ET.SubElement(citation, "volume").text = c.attrib['volume']
-                                ET.SubElement(citation_parscit, "volume").text = c.attrib['volume']
-            if childs.tag == '{http://www.tei-c.org/ns/1.0}note':
+                                #ET.SubElement(citation_parscit, "volume").text = c.attrib['volume']
+            if childs.tag == 'note':
                 try:
                     ET.SubElement(citation, "note").text = childs.text
-                    ET.SubElement(citation_parscit, "note").text = childs.text
+                    #ET.SubElement(citation_parscit, "note").text = childs.text
                 except:
                     pass
         ET.SubElement(citation, "marker").text = str(count) + "."
         ET.SubElement(citation, "rawString").text = s1
-        ET.SubElement(citation_parscit, "marker").text = str(count) + "."
-        ET.SubElement(citation_parscit, "rawString").text = s1
+        #ET.SubElement(citation_parscit, "marker").text = str(count) + "."
+        #ET.SubElement(citation_parscit, "rawString").text = s1
 
     def extractAcknowledgement(self, child):
         pass
@@ -233,6 +244,9 @@ class XmlWriter:
         pass
 
     def extractReferences(self, child):
+        for child in self.parscit_input.getroot():
+            ET.Element.append(self.newRoot, child)
+        '''
         if self.ident != "" and self.version != "":
             algorithm = ET.SubElement(self.newRoot, "algorithm", name=self.ident, version=self.version)
         else:
@@ -251,10 +265,11 @@ class XmlWriter:
                 count = count + 1
                 self.extractBibilography(c, count, citationList, citationList_parscit)
         pass
+        '''
 
     def parseTextInformation(self, tag):
         for childs in tag:
-            if childs.tag == '{http://www.tei-c.org/ns/1.0}back':
+            if childs.tag == 'back':
                 for child in childs:
                     if child.attrib['type'] == 'acknowledgement':
                         self.extractAcknowledgement(child)
@@ -284,7 +299,14 @@ class XmlWriter:
         check_sums = ET.SubElement(file_info, "checkSums")
         check_sum = ET.SubElement(check_sums, "checkSum")
         ET.SubElement(check_sum, "fileType").text = "pdf"
-        ET.SubElement(check_sum, "sha1").text = ""
+        try:
+            met_input = ET.parse(self.path_met)
+            root_met = met_input.getroot()
+            for child in root_met:
+                if child.tag == "SHA1":
+                    ET.SubElement(check_sum, "sha1").text = child.text
+        except:
+            ET.SubElement(check_sum, "sha1").text = ""
 
 
 
@@ -292,9 +314,10 @@ class XmlWriter:
     def main(self):
         self.createFileInfo()
         for childs in self.root:
-            if childs.tag == '{http://www.tei-c.org/ns/1.0}teiHeader':
+            if childs.tag == 'teiHeader':
+
                 self.parseHeaderInformation(childs)
-            elif childs.tag == '{http://www.tei-c.org/ns/1.0}text':
+            elif childs.tag == 'text':
                 self.parseTextInformation(childs)
 
     def get_xml_root(self):
@@ -327,7 +350,7 @@ class XmlWriter:
     def conversationTraceExtractor(self, childs):
         for child in childs:
             for ch in child:
-                if ch.tag == '{http://www.tei-c.org/ns/1.0}application':
+                if ch.tag == 'application':
                     try:
                         file_info = self.newRoot.find("fileInfo")
                         conversionTrace = file_info.find('conversionTrace')

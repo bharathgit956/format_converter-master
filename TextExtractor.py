@@ -9,20 +9,28 @@ class text_extractor:
 
     def titleAndAuthorExtraction(self, childs, fh):
         for child in childs:
-            if child.tag == '{http://www.tei-c.org/ns/1.0}titleStmt':
+            if child.tag == 'titleStmt':
                 try:
                     #print(child[0].text)
                     fh.write(child[0].text +'\n')
                 except:
                     pass
-            elif child.tag == '{http://www.tei-c.org/ns/1.0}sourceDesc':
+            elif child.tag == 'sourceDesc':
                 for ch in child[0][0]:
                     self.authorExtraction(ch,fh)
                 pass
 
+    def safeStr(self, obj):
+        try:
+            return str(obj)
+        except UnicodeEncodeError:
+            return obj.encode('ascii', 'ignore').decode('ascii')
+        except:
+            return ""
+
     def authorExtraction(self, childs,fh):
         for author in childs:
-            if author.tag == '{http://www.tei-c.org/ns/1.0}email':
+            if author.tag == 'email':
                 #print(author.text)
                 fh.write(author.text+'\n')
             else:
@@ -30,65 +38,71 @@ class text_extractor:
                 for name in author:
                     s = s + name.text + " "
                 #print(s)
-                fh.write(s+'\n')
+                fh.write(self.safeStr(s)+'\n')
 
 
 
     def abstractExtraction(self, childs, fh):
         for child in childs:
-            if child.tag == '{http://www.tei-c.org/ns/1.0}abstract':
-                try:
-                    #print(child[0].text)
-                    fh.write(child[0].text)
-                except:
-                    pass
+            if child.tag == 'abstract':
+                temp_str = ""
+                if child.text and child.text != "\n":
+                    temp_str = temp_str + child.text
+                else:
+                    for ch in child:
+                        try:
+                            for c in ch:
+                                temp_str = temp_str+ " " + c.text
+                        except:
+                            pass
+                fh.write(temp_str)
         fh.write('\n')
 
 
     def parseHeaderInformation(self,tag,fh):
         for childs in tag:
-            if childs.tag == '{http://www.tei-c.org/ns/1.0}fileDesc':
+            if childs.tag == 'fileDesc':
                 self.titleAndAuthorExtraction(childs,fh)
 
-            elif childs.tag == '{http://www.tei-c.org/ns/1.0}profileDesc':
+            elif childs.tag == 'profileDesc':
                 self.abstractExtraction(childs,fh)
 
 
     def extractBibilography(self, c, count, fh):
         s = ""
         for childs in c:
-            if childs.tag == '{http://www.tei-c.org/ns/1.0}analytic':
+            if childs.tag == 'analytic':
                 for child in childs:
-                    if child.tag == '{http://www.tei-c.org/ns/1.0}title':
+                    if child.tag == 'title':
                         try:
                             s = s + child.text + " ,"
                         except:
                             pass
-                    if child.tag == '{http://www.tei-c.org/ns/1.0}author':
+                    if child.tag == 'author':
                         for ch in child:
                             for c in ch:
                                 s = s + c.text + " "
                             s = s + ","
-            if childs.tag == '{http://www.tei-c.org/ns/1.0}monogr':
+            if childs.tag == 'monogr':
                 for ch in childs:
-                    if ch.tag == '{http://www.tei-c.org/ns/1.0}title' or ch.tag == '{http://www.tei-c.org/ns/1.0}editor':
+                    if ch.tag == 'title' or ch.tag == 'editor':
                         try:
                             s = s + ch.text + " ,"
                         except:
                             pass
-                    if ch.tag == '{http://www.tei-c.org/ns/1.0}meeting':
+                    if ch.tag == 'meeting':
                         pass
-                    if ch.tag == '{http://www.tei-c.org/ns/1.0}imprint':
+                    if ch.tag == 'imprint':
                         for c in ch:
-                            if c.tag == '{http://www.tei-c.org/ns/1.0}publisher':
+                            if c.tag == 'publisher':
                                 s = s + c.text + " ,"
                             if 'when' in c.attrib.keys():
                                 s = s + c.attrib['when']+" "
-            if childs.tag == '{http://www.tei-c.org/ns/1.0}note':
+            if childs.tag == 'note':
                     s = s + childs.text
 
         #print(str(count) + "." + s)
-        fh.write(str(count) + "." + s)
+        fh.write(str(count) + "." + self.safeStr(s))
 
 
     def extractAcknowledgement(self, child):
@@ -113,7 +127,7 @@ class text_extractor:
 
     def parseTextInformation(self,tag,fh):
         for childs in tag:
-            if childs.tag == '{http://www.tei-c.org/ns/1.0}body':
+            if childs.tag == 'body':
                 for child in childs:
                     for ch in child:
                         try:
@@ -121,7 +135,7 @@ class text_extractor:
                             fh.write(ch.text+'\n')
                         except:
                             pass
-            elif childs.tag == '{http://www.tei-c.org/ns/1.0}back':
+            elif childs.tag == 'back':
                 for child in childs:
                     if child.attrib['type'] == 'acknowledgement':
                         self.extractAcknowledgement(child)
@@ -136,9 +150,9 @@ class text_extractor:
         root = tree.getroot()
         fh = open(self.file_path,'w')
         for childs in root:
-            if childs.tag == '{http://www.tei-c.org/ns/1.0}teiHeader':
+            if childs.tag == 'teiHeader':
                 self.parseHeaderInformation(childs,fh)
-            elif childs.tag == '{http://www.tei-c.org/ns/1.0}text':
+            elif childs.tag == 'text':
                 self.parseTextInformation(childs,fh)
         fh.close()
         self.getBodyandCite(self.file_path)

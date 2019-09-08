@@ -3,44 +3,72 @@ import xml.etree.ElementTree as ET
 
 from XmlWriter import XmlWriter
 from TextExtractor import text_extractor
+from os import listdir
+
+base_path = "/root/sharedfolder/citeseer_results/2019090801"
+path_output = "root/sharedfolder/citeseer_results/format_converter_results"
+filenames = listdir(base_path)
 
 
-class PipelineConverter:
-    path = ''
+for pdfmef_path in filenames:
+    path_academic_filter = base_path+"/"+pdfmef_path+"/"+pdfmef_path+".academic_filter"
+    success = False
+    try:
+        acad = open(path_academic_filter)
+        success = True
+    except:
+        pass
 
-    def __init__(self, path):
-        self.path = path
+    path_full_text = base_path+"/"+pdfmef_path+"/"+pdfmef_path+".tei"
+    path_parscit =  base_path+"/"+pdfmef_path+"/"+pdfmef_path+".cite"
+    path_met = base_path + "/" + pdfmef_path + "/" + pdfmef_path + ".met"
 
-    path2 = "/Users/bharath971/Documents/Acads/citeseerx docs/pdfmef-extraction-sample-output/" \
-            "tei_processFulltextDocument/10.1.1.324.1892.tei.xml"
-    path3 = "/Users/bharath971/Documents/Acads/citeseerx docs/perl-extraction-sample-output"
+    acad_paper = False
+    try:
+        parscit_input = ET.parse(path_parscit)
+        root = parscit_input.getroot()
+        if root.tag != "error":
+            acad_paper = True
+    except:
+        pass
 
-    filename, extension = os.path.splitext(path2)
-    filename, extension = os.path.splitext(filename)
-    filename, extension = os.path.split(filename)
+    if not success and acad_paper:
+        filename, extension = os.path.splitext(path_full_text)
+        #filename, extension = os.path.splitext(filename)
+        filename, extension = os.path.split(filename)
 
-    final_path = path3 + '/' + extension
-    if not os.path.exists(final_path):
-        os.mkdir(final_path)
+        final_path = path_output + '/' + extension
+        if not os.path.exists(final_path):
+            os.mkdir(final_path)
 
-    file_1 = final_path + '/' + extension + '.header'
-    file_2 = final_path+'/'+extension+'.parscit'
-    file_3 = final_path+'/'+extension+'.xml'
-    file_4 = final_path+'/'+extension+'.txt'
-    fh = open(file_1,'w')
-    fh1 = open(file_2,'w')
-    fh2 = open(file_3,'w')
+        file_1 = final_path + '/' + extension + '.header'
+        file_2 = final_path+'/'+extension+'.parscit'
+        file_3 = final_path+'/'+extension+'.xml'
+        file_4 = final_path+'/'+extension+'.txt'
+        fh = open(file_1,'w')
+        fh1 = open(file_2,'w')
+        fh2 = open(file_3,'w')
 
-    xmlWriter = XmlWriter(path2,path3)
-    xmlWriter.main()
+        xmlWriter = XmlWriter(path_full_text,path_output,path_parscit,path_met)
+        xmlWriter.main()
 
-    ET.ElementTree(xmlWriter.get_xml_root()).write(file_3)
-    ET.ElementTree(xmlWriter.get_header_root()).write(file_1)
-    ET.ElementTree(xmlWriter.get_parscit_root()).write(file_2)
+        ET.ElementTree(xmlWriter.get_xml_root()).write(file_3)
+        ET.ElementTree(xmlWriter.get_header_root()).write(file_1)
+        ET.ElementTree(xmlWriter.get_parscit_root()).write(file_2)
 
-    fh.close()
-    fh1.close()
-    fh2.close()
+        fh.close()
+        fh1.close()
+        fh2.close()
 
-    text_extractor = text_extractor(file_4,path2)
-    text_extractor.main()
+        try:
+            f = open(path_met, "r")
+            copy = open(final_path+'/'+extension+'.met', "wt")
+            for line in f:
+                copy.write(line)
+            f.close()
+            copy.close()
+        except:
+            pass
+
+        textExtractor = text_extractor(file_4,path_full_text)
+        textExtractor.main()
