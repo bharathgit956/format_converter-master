@@ -45,6 +45,7 @@ class XmlWriter:
         title_header = ET.SubElement(self.header_root, "title")
         authors_header = ET.SubElement(self.header_root, "authors")
 
+
         for child in childs:
             if child.tag == 'titleStmt':
                 try:
@@ -62,11 +63,12 @@ class XmlWriter:
                 except:
                     pass
 
+
     def authorExtraction(self, childs, authors,authors_header):
         authorXml = ET.SubElement(authors, "author")
         authorXml_header = ET.SubElement(authors_header, "author")
         for author in childs:
-            if author.tag == 'persName':
+            if 'persName' in author.tag:
                 s = ""
                 for ch in author:
                     try:
@@ -139,6 +141,26 @@ class XmlWriter:
 
             elif childs.tag == 'profileDesc':
                 self.abstractExtraction(childs)
+        algorithm = self.newRoot.find("algorithm")
+        date = ET.SubElement(algorithm, "date")
+        date_header = ET.SubElement(self.header_root, "date")
+        ch = tag.find('fileDesc')
+        for child in ch:
+            if child.tag == 'publicationStmt':
+                for c in child:
+                    if c.tag == 'date':
+                        try:
+                            #print(child[0].text)
+                            date.text = c.text
+                            date_header.text = c.text
+                        except:
+                            date.text = ""
+                            date_header.text = ""
+                            pass
+        validHeader = ET.SubElement(algorithm, "validHeader")
+        validHeader.text = "1"
+        validHeader_header = ET.SubElement(self.header_root, "validHeader")
+        validHeader_header.text = "1"
 
     def extractRawString(self, c):
         s = ""
