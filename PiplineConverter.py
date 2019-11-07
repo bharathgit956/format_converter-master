@@ -22,6 +22,7 @@ for pdfmef_path in filenames:
     path_full_text = base_path+"/"+pdfmef_path+"/"+pdfmef_path+".tei"
     path_parscit =  base_path+"/"+pdfmef_path+"/"+pdfmef_path+".cite"
     path_met = base_path + "/" + pdfmef_path + "/" + pdfmef_path + ".met"
+    path_txt =  base_path + "/" + pdfmef_path + "/" + pdfmef_path + ".txt"
 
     acad_paper = False
     try:
@@ -43,7 +44,7 @@ for pdfmef_path in filenames:
 
         file_1 = final_path + '/' + extension + '.header'
         file_2 = final_path+'/'+extension+'.parscit'
-        file_3 = final_path+'/'+extension+'.xml'
+        file_3 = final_path+'/'+extension+'.file'
         file_4 = final_path+'/'+extension+'.txt'
         fh = open(file_1,'w')
         fh1 = open(file_2,'w')
@@ -52,7 +53,7 @@ for pdfmef_path in filenames:
         xmlWriter = XmlWriter(path_full_text,path_output,path_parscit,path_met)
         xmlWriter.main()
 
-        ET.ElementTree(xmlWriter.get_xml_root()).write(file_3)
+        ET.ElementTree(xmlWriter.get_file_info_root()).write(file_3,encoding='UTF-8',xml_declaration=True)
         ET.ElementTree(xmlWriter.get_header_root()).write(file_1)
         ET.ElementTree(xmlWriter.get_parscit_root()).write(file_2)
 
@@ -70,5 +71,25 @@ for pdfmef_path in filenames:
         except:
             pass
 
-        textExtractor = text_extractor(file_4,path_full_text)
-        textExtractor.main()
+        try:
+            f = open(path_txt, "r")
+            copy = open(final_path+'/'+extension+'.txt', "wt")
+            for line in f:
+                copy.write(line)
+            f.close()
+            copy.close()
+
+            oldFileName, extension = os.path.splitext(path_txt)
+            keyword = 'REFERENCES'
+            with open(path_txt, 'r') as fh:
+                text_split = fh.read().split(keyword)
+
+            with open(oldFileName + '.body', 'w') as fh:
+                fh.write(text_split[0] + keyword)
+
+            with open(oldFileName + '.cite', 'w') as fh:
+                fh.write(keyword.join(text_split[1:]))
+
+        except:
+            textExtractor = text_extractor(file_4,path_full_text)
+            textExtractor.main()
