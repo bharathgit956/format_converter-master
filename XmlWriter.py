@@ -322,7 +322,7 @@ class XmlWriter:
         file_info_file.text = ""
 
         check_sums = ET.SubElement(file_info, "checkSums")
-        check_sums_file = ET.Element(self.file_info_root, "checkSums")
+        check_sums_file = ET.Element("checkSums")
         check_sum = ET.SubElement(check_sums, "checkSum")
         check_sum_file = ET.SubElement(check_sums_file, "checkSum")
 
