@@ -318,7 +318,7 @@ class XmlWriter:
         ET.SubElement(file_info, "bodyFile").text = file_2
         ET.SubElement(file_info, "citeFile").text = file_3
         ET.SubElement(file_info, "conversionTrace").text = ""
-        file_info_file = ET.Element(self.file_info_root, "conversionTrace")
+        file_info_file = ET.Element("conversionTrace")
         file_info_file.text = ""
 
         check_sums = ET.SubElement(file_info, "checkSums")
