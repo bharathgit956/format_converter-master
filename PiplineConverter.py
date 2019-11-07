@@ -5,7 +5,7 @@ from XmlWriter import XmlWriter
 from TextExtractor import text_extractor
 from os import listdir
 
-base_path = "/root/sharedfolder/citeseer_results/2019090801"
+base_path = "/root/sharedfolder/citeseer_results/2019090800"
 path_output = "/root/sharedfolder/citeseer_results/format_converter_results"
 filenames = listdir(base_path)
 

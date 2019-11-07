@@ -318,8 +318,8 @@ class XmlWriter:
         ET.SubElement(file_info, "bodyFile").text = file_2
         ET.SubElement(file_info, "citeFile").text = file_3
         ET.SubElement(file_info, "conversionTrace").text = ""
-        root_1 = self.file_info_root.Element("conversionTrace")
-        root_1.text = ""
+        self.file_info_root = ET.Element("conversionTrace")
+        self.file_info_root.text = ""
 
         check_sums = ET.SubElement(file_info, "checkSums")
         check_sums_file = self.file_info_root.Element("checkSums")
