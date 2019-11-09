@@ -356,7 +356,7 @@ class XmlWriter:
         return self.indent(self.newRoot)
 
     def get_file_info_string(self):
-        return """"<?xml version="1.0" encoding="UTF-8"?>"""+ "\n"+self.file_info_string
+        return """<?xml version="1.0" encoding="UTF-8"?>"""+ "\n"+self.file_info_string
 
     def get_header_root(self):
         return self.indent(self.header_root)

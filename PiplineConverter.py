@@ -82,21 +82,8 @@ for pdfmef_path in filenames:
             f.close()
             copy.close()
 
-            oldFileName, extension = os.path.splitext(path_txt)
-            keyword = 'REFERENCES'
-
-            fh = open(path_txt,'r')
-            text_split = fh.read().split(keyword)
-            fh.close()
-
-            fh = open(oldFileName + '.body', 'w')
-            fh.write(text_split[0] + keyword)
-            fh.close()
-
-            fh = open(oldFileName + '.body', 'w')
-            fh.write(keyword.join(text_split[1:]))
-            fh.close()
+            textExtractor = text_extractor(file_4, path_full_text)
+            textExtractor.main()
 
         except:
-            textExtractor = text_extractor(file_4,path_full_text)
-            textExtractor.main()
+            pass
