@@ -362,7 +362,7 @@ class XmlWriter:
         return self.indent(self.header_root)
 
     def get_parscit_root(self):
-        return self.indent(self.parscit_root)
+        return self.parscit_root
 
 
     def indent(self, elem, level=0):
