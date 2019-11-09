@@ -53,7 +53,10 @@ for pdfmef_path in filenames:
         xmlWriter = XmlWriter(path_full_text,path_output,path_parscit,path_met)
         xmlWriter.main()
 
-        ET.ElementTree(xmlWriter.get_file_info_root()).write(file_3,encoding='UTF-8',xml_declaration=True)
+        f = open(file_3, "w")
+        f.write(xmlWriter.get_file_info_string())
+        f.close()
+
         ET.ElementTree(xmlWriter.get_header_root()).write(file_1)
         ET.ElementTree(xmlWriter.get_parscit_root()).write(file_2)
 
@@ -81,14 +84,18 @@ for pdfmef_path in filenames:
 
             oldFileName, extension = os.path.splitext(path_txt)
             keyword = 'REFERENCES'
-            with open(path_txt, 'r') as fh:
-                text_split = fh.read().split(keyword)
 
-            with open(oldFileName + '.body', 'w') as fh:
-                fh.write(text_split[0] + keyword)
+            fh = open(path_txt,'r')
+            text_split = fh.read().split(keyword)
+            fh.close()
 
-            with open(oldFileName + '.cite', 'w') as fh:
-                fh.write(keyword.join(text_split[1:]))
+            fh = open(oldFileName + '.body', 'w')
+            fh.write(text_split[0] + keyword)
+            fh.close()
+
+            fh = open(oldFileName + '.body', 'w')
+            fh.write(keyword.join(text_split[1:]))
+            fh.close()
 
         except:
             textExtractor = text_extractor(file_4,path_full_text)

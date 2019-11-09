@@ -18,7 +18,7 @@ class XmlWriter:
         self.newRoot = ET.Element("document")
         self.newRoot.set('id', 'unset')
         self.header_root = None
-        self.file_info_root = None
+        self.file_info_string = ""
         #self.header_root.set('id', 'unset')
         self.parscit_root = self.parscit_input.getroot()[0]
         self.intent = ""
@@ -318,25 +318,27 @@ class XmlWriter:
         ET.SubElement(file_info, "bodyFile").text = file_2
         ET.SubElement(file_info, "citeFile").text = file_3
         ET.SubElement(file_info, "conversionTrace").text = ""
-        self.file_info_root = ET.Element("conversionTrace")
-        self.file_info_root.text = ""
+        self.file_info_string = "<checksums>"+"\n"
 
         check_sums = ET.SubElement(file_info, "checkSums")
-        check_sums_file = self.file_info_root.Element("checkSums")
         check_sum = ET.SubElement(check_sums, "checkSum")
-        check_sum_file = ET.SubElement(check_sums_file, "checkSum")
+        self.file_info_string += "<checksum>"+"\n"
 
         ET.SubElement(check_sum, "fileType").text = "pdf"
-        ET.SubElement(check_sum_file, "fileType").text = "pdf"
+        self.file_info_string += "<fileType>pdf</fileType>" + "\n"
         try:
             met_input = ET.parse(self.path_met)
             root_met = met_input.getroot()
             for child in root_met:
                 if child.tag == "SHA1":
                     ET.SubElement(check_sum, "sha1").text = child.text
-                    ET.SubElement(check_sum_file, "sha1").text = child.text
+                    self.file_info_string += "<sha1>" +child.text+"</sha1>" + "\n"
         except:
             ET.SubElement(check_sum, "sha1").text = ""
+            self.file_info_string += "<sha1> </sha1>" + "\n"
+
+        self.file_info_string += "</checksum>" + "\n" + "</checkSums>"
+
 
 
 
@@ -353,8 +355,8 @@ class XmlWriter:
     def get_xml_root(self):
         return self.indent(self.newRoot)
 
-    def get_file_info_root(self):
-        return self.indent(self.file_info_root)
+    def get_file_info_string(self):
+        return """"<?xml version="1.0" encoding="UTF-8"?>"""+ "\n"+self.file_info_string
 
     def get_header_root(self):
         return self.indent(self.header_root)
@@ -387,11 +389,11 @@ class XmlWriter:
                     try:
                         file_info = self.newRoot.find("fileInfo")
                         conversionTrace = file_info.find('conversionTrace')
-                        conversionTrace_file = self.file_info_root.find('conversionTrace')
                         conversionTrace.text = ""+ch.attrib['ident'] + " "+ch.attrib['version']
-                        conversionTrace_file.text = conversionTrace.text
+                        self.file_info_string = "<conversionTrace>"+conversionTrace.text+"</conversionTrace>" + "\n" + self.file_info_string
                         self.ident = ch.attrib['ident']
                         self.version = ch.attrib['version']
                     except:
+                        self.file_info_string = "<conversionTrace> </conversionTrace>" + "\n" + self.file_info_string
                         pass
 
