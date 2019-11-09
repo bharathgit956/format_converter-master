@@ -370,7 +370,7 @@ class XmlWriter:
         j = "\n"
         if len(elem):
             if not elem.text or not elem.text.strip():
-                elem.text = i + "  "
+                elem.text = i
             if not elem.tail or not elem.tail.strip():
                 elem.tail = i
             for subelem in elem:
