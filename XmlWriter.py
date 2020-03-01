@@ -20,7 +20,10 @@ class XmlWriter:
         self.header_root = None
         self.file_info_string = ""
         #self.header_root.set('id', 'unset')
-        self.parscit_root = self.parscit_input.getroot()[0]
+        try:
+            self.parscit_root = self.parscit_input.getroot()[0]
+        except:
+            self.parscit_root = ET.Element("algorithm",name='ParsCit', version='110505')
         self.intent = ""
         self.version=""
 

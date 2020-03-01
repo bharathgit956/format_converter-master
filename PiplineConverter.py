@@ -5,12 +5,16 @@ from XmlWriter import XmlWriter
 from TextExtractor import text_extractor
 from os import listdir
 
-base_path = "/root/sharedfolder/citeseer_results/2019090800"
-path_output = "/root/sharedfolder/citeseer_results/format_converter_results"
+base_path = "/root/sharedfolder/MAG_crawl/MAG_crawl_results/2020022908"
+path_output = "/root/sharedfolder/MAG_crawl/MAG_crawl_results_format_converter"
 filenames = listdir(base_path)
-
+#output_file_names = set(listdir(path_output))
+print(len(filenames))
 
 for pdfmef_path in filenames:
+    #print(pdfmef_path)
+    #if pdfmef_path in output_file_names:
+        #continue
     path_academic_filter = base_path+"/"+pdfmef_path+"/"+pdfmef_path+".academic_filter"
     success = False
     try:
@@ -23,17 +27,23 @@ for pdfmef_path in filenames:
     path_parscit =  base_path+"/"+pdfmef_path+"/"+pdfmef_path+".cite"
     path_met = base_path + "/" + pdfmef_path + "/" + pdfmef_path + ".met"
     path_txt =  base_path + "/" + pdfmef_path + "/" + pdfmef_path + ".txt"
-
+    #path_algo = base_path + "/"+pdfmef_path+ "/" + pdfmef_path + ".algorithms"
     acad_paper = False
     try:
         parscit_input = ET.parse(path_parscit)
+        #algo_input = ET.parse(path_algo)
+        tei_input = ET.parse(path_full_text)
         root = parscit_input.getroot()
-        if root.tag != "error":
+        #root_algo = algo_input.getroot()
+        root_tei = tei_input.getroot()
+        #print(root.tag, root_algo.tag, root_tei.tag)
+        if root.tag != "error" and root_tei.tag != "error":
             acad_paper = True
     except:
         pass
-
+    #print(success, acad_paper)
     if not success and acad_paper:
+        #print('inside success and acad paper')
         filename, extension = os.path.splitext(path_full_text)
         #filename, extension = os.path.splitext(filename)
         filename, extension = os.path.split(filename)
